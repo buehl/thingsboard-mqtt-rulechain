@@ -1,0 +1,80 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": ""
+    },
+    "name": "Send MQTT command to Tasmota lamp",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 2,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 192,
+          "layoutY": 251
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Build Backlog Command",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "// See: schemecolor.com/red-orange-green-gradient.php\nif (msg.co2 < 700) {\n    color = '#69B34C'; // Apple\n    power = 1; // on\n} else if (msg.co2 < 800) {\n    color = '#ACB334'; // Brass\n    power = 1; // on\n} else if (msg.co2 < 900) {\n    color = '#FAB733'; // Saffron\n    power = 1; // on\n} else if (msg.co2 < 1000) {\n    color = '#FF8E15'; // Beer\n    power = 1; // on\n} else if (msg.co2 < 1100) {\n    color = '#FF4E11'; // Orioles Orange\n    power = 3; // blink\n} else if (msg.co2 >= 1100) {\n    color = '#FF0D0D'; // Candy Apple Red\n    power = 3; // blink\n} else {\n    color = 3; // Blue\n    power = 1;\n}\n\n/* Commands are concatenated to one Backlog command.\n   The first quotation mark of the payload needs to be \n   seperated with an initial semicolon\n   See: https://tasmota.github.io/docs/Commands/#the-power-of-backlog */\nmsg = '; Color ' + color + '; Power ' + power + ';';\n\n// The MQTT external rule node only allows to read from metadata fields...\nmetadata.mqttTopic = msg.mqttTopic;\nreturn {msg: msg, metadata: metadata, msgType: msgType};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 477,
+          "layoutY": 249
+        },
+        "type": "org.thingsboard.rule.engine.mqtt.TbMqttNode",
+        "name": "Send Backlog Command",
+        "debugMode": false,
+        "configuration": {
+          "topicPattern": "cmnd/${mqttTopic}/Backlog",
+          "host": "CHANGME",
+          "port": 8883,
+          "connectTimeoutSec": 10,
+          "clientId": "",
+          "cleanSession": true,
+          "ssl": true,
+          "credentials": {
+            "type": "basic",
+            "username": "CHANGME",
+            "password": "CHANGEME"
+          }
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 296,
+          "layoutY": 150
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "alarmType = 'lamp'?",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "if (msg.alarmType !== 'lamp')\n    return false;\nif (!msg.mqttTopic)\n    return false;\n\nreturn true;"
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 0,
+        "toIndex": 1,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 0,
+        "type": "True"
+      }
+    ],
+    "ruleChainConnections": null
+  }
+}
