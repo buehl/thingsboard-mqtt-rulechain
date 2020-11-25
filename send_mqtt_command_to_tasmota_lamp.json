@@ -10,8 +10,21 @@
     "configuration": null
   },
   "metadata": {
-    "firstNodeIndex": 0,
+    "firstNodeIndex": 1,
     "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 484,
+          "layoutY": 351
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "CO2 > 0?",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "if (metadata.ss_mqttTopic) {\n    return true;\n} else {\n    return false;\n}"
+        }
+      },
       {
         "additionalInfo": {
           "description": "",
@@ -35,7 +48,7 @@
         "name": "Build Backlog Command",
         "debugMode": true,
         "configuration": {
-          "jsScript": "// See: schemecolor.com/red-orange-green-gradient.php\nif (msg.co2 < 700) {\n    color = '#69B34C'; // Apple\n    power = 1; // on\n} else if (msg.co2 < 800) {\n    color = '#ACB334'; // Brass\n    power = 1; // on\n} else if (msg.co2 < 900) {\n    color = '#FAB733'; // Saffron\n    power = 1; // on\n} else if (msg.co2 < 1000) {\n    color = '#FF8E15'; // Beer\n    power = 1; // on\n} else if (msg.co2 < 1100) {\n    color = '#FF4E11'; // Orioles Orange\n    power = 3; // blink\n} else if (msg.co2 >= 1100) {\n    color = '#FF0D0D'; // Candy Apple Red\n    power = 3; // blink\n} else {\n    color = 3; // Blue\n    power = 1;\n}\n\n/* Commands are concatenated to one Backlog command.\n   The first quotation mark of the payload needs to be \n   seperated with an initial semicolon\n   See: https://tasmota.github.io/docs/Commands/#the-power-of-backlog */\nmsg = '; Color ' + color + '; Power ' + power + ';';\n\nreturn {msg: msg, metadata: metadata, msgType: msgType};"
+          "jsScript": "// See: schemecolor.com/red-orange-green-gradient.php\nif (msg.co2 > 1200) {\n    color = '#FF0D0D'; // Candy Apple Red\n    power = 3; // blink\n} else if (msg.co2 > 1100) {\n    color = '#FF4E11';\n    power = 3;\n} else if (msg.co2 > 1000) {\n    color = '#FF8E15'; // Beer\n    power = 1; // on\n} else if (msg.co2 > 900) {\n    color = '#FAB733'; // Saffron\n    power = 1; // on\n} else if (msg.co2 > 800) {\n    color = '#ACB334'; // Brass\n    power = 1; // on\n} else if (msg.co2 <= 800) {\n    color = '#69B34C'; // Apple\n    power = 1;\n} else {\n    color = 3; // Blue\n    power = 1;\n}\n\n\n/* Commands are concatenated to one Backlog command.\n   The first quotation mark of the payload needs to be \n   seperated with an initial semicolon\n   See: https://tasmota.github.io/docs/Commands/#the-power-of-backlog */\nmsg = '; Color ' + color + '; Power ' + power + ';';\n\nreturn {\n    msg: msg,\n    metadata: metadata,\n    msgType: msgType\n};"
         }
       },
       {
@@ -65,8 +78,8 @@
       {
         "additionalInfo": {
           "description": "",
-          "layoutX": 456,
-          "layoutY": 299
+          "layoutX": 208,
+          "layoutY": 438
         },
         "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
         "name": "CO2 > 0?",
@@ -78,8 +91,8 @@
       {
         "additionalInfo": {
           "description": "",
-          "layoutX": 737,
-          "layoutY": 298
+          "layoutX": 326,
+          "layoutY": 564
         },
         "type": "org.thingsboard.rule.engine.metadata.TbGetAttributesNode",
         "name": "Add Metadata",
@@ -99,22 +112,27 @@
     "connections": [
       {
         "fromIndex": 0,
-        "toIndex": 3,
+        "toIndex": 2,
         "type": "True"
       },
       {
         "fromIndex": 1,
-        "toIndex": 2,
-        "type": "Success"
-      },
-      {
-        "fromIndex": 3,
         "toIndex": 4,
         "type": "True"
       },
       {
+        "fromIndex": 2,
+        "toIndex": 3,
+        "type": "Success"
+      },
+      {
         "fromIndex": 4,
-        "toIndex": 1,
+        "toIndex": 5,
+        "type": "True"
+      },
+      {
+        "fromIndex": 5,
+        "toIndex": 0,
         "type": "Success"
       }
     ],
