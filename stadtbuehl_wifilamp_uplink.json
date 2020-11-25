@@ -1,0 +1,12 @@
+{
+  "name": "stadtbuehl_wifilamp_uplink",
+  "type": "UPLINK",
+  "debugMode": true,
+  "configuration": {
+    "decoder": "/** Decoder **/\n\n// decode payload to string\nvar payloadStr = decodeToString(payload);\nvar data = JSON.parse(payloadStr);\nvar topicPattern = 'tele/(.+)/STATE';\n\nvar deviceName =  metadata.topic.match(topicPattern)[1];\n// decode payload to JSON\nvar deviceType = 'stadtbuehl_wifilamp';\n\n// Result object with device attributes/telemetry data\nvar result = {\n   deviceName: deviceName,\n   deviceType: deviceType,\n   attributes: {\n       integrationName: metadata['integrationName'],\n   },\n   telemetry: {\n       color: data.Color,\n       dimmer: data.Dimmer,\n       fade: data.Fade,\n       hsbcolor: data.HSBColor,\n       heap: data.heap,\n       ledtable: data.LedTable,\n       loadavg: data.LoadAvg,\n       mqttcount: data.MqttCount,\n       power: data.POWER,\n       scheme: data.Scheme,\n       sleep: data.Sleep,\n       sleepmode: data.SleepMode,\n       speed: data.Speed,\n       time: data.Time,\n       uptime: data.uptime,\n       uptimesec: data.UptimeSec,\n       white: data.White,\n       wifi_ap: data.Wifi.AP,\n       wifi_bssid: data.Wifi.BSSId,\n       wifi_channel: data.Wifi.Channel,\n       wifi_downtime: data.Wifi.Downtime,\n       wifi_linkcount: data.Wifi.LinkCount,\n       wifi_rssi: data.Wifi.RSSI,\n       wifi_ssid: data.Wifi.SSId,\n       wifi_signal: data.Wifi.Signal,\n   }\n};\n\n/** Helper functions **/\n\nfunction decodeToString(payload) {\n   return String.fromCharCode.apply(String, payload);\n}\n\nfunction decodeToJson(payload) {\n   // convert payload to string.\n   var str = decodeToString(payload);\n\n   // parse string to JSON\n   var data = JSON.parse(str);\n   return data;\n}\n\nreturn result;",
+    "encoder": null
+  },
+  "additionalInfo": {
+    "description": ""
+  }
+}
